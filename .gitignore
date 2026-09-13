@@ -1,0 +1,13 @@
+.shots/
+node_modules/
+tools/sources/
+tools/.*_raw.json
+tools/.*_defs.json
+tools/.oc5.json
+/lingle
+/data/
+*.db
+*.db-shm
+*.db-wal
+*.pyc
+__pycache__/

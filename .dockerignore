@@ -1,0 +1,11 @@
+.git
+.github
+.shots
+docs
+node_modules
+tools/sources
+data
+*.db
+*.db-shm
+*.db-wal
+/lingle

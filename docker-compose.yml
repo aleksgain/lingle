@@ -1,0 +1,29 @@
+services:
+  lingle:
+    image: ghcr.io/aleksgain/lingle:latest
+    # To build from a checkout instead of pulling, comment out `image:` above
+    # and uncomment the line below.
+    # build: .
+    container_name: lingle
+    restart: unless-stopped
+    ports:
+      - "8321:8080"
+    volumes:
+      - ./data:/data
+    environment:
+      # Which language a first-time visitor gets. They can switch, and their
+      # choice is remembered.
+      LINGLE_DEFAULT_LANG: "ru"
+      # Comma-separated allow-list. Empty offers every installed pack.
+      LINGLE_LANGUAGES: ""
+      # Header text. Empty uses each language's own name.
+      LINGLE_TITLE: ""
+      # Decides when the daily word rolls over.
+      TZ: "Europe/Prague"
+      PUID: "1000"
+      PGID: "1000"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/healthz"]
+      interval: 30s
+      timeout: 3s
+      retries: 3

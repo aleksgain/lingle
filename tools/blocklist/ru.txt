@@ -1,0 +1,13 @@
+# One word per line. Words listed here are never used as an answer.
+# Frequency data comes from film subtitles, so it over-represents slang.
+телка
+попка
+нарик
+алкаш
+пойло
+писец
+течка
+шлюха
+сучка
+мудак
+жопка

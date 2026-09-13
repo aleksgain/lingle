@@ -1,0 +1,11 @@
+{
+  "name": "Lingle",
+  "short_name": "Lingle",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#121213",
+  "theme_color": "#121213",
+  "icons": [
+    { "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

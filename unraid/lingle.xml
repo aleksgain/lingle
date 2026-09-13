@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<Container version="2">
+  <Name>Lingle</Name>
+  <Repository>ghcr.io/aleksgain/lingle:latest</Repository>
+  <Registry>https://github.com/aleksgain/lingle/pkgs/container/lingle</Registry>
+  <Network>bridge</Network>
+  <MyIP/>
+  <Shell>sh</Shell>
+  <Privileged>false</Privileged>
+  <Support>https://github.com/aleksgain/lingle/issues</Support>
+  <Project>https://github.com/aleksgain/lingle</Project>
+  <Overview>
+    Lingle is a self-hosted word guessing game in the style of Wordle, with a
+    language selector. One puzzle per language per day, the same word for
+    everyone on your network, rolling over at local midnight.&#13;&#13;
+    Ships with Russian and English. Once a puzzle is over it shows the word's
+    dictionary entry - for Russian, the English meaning plus the stressed
+    spelling - which makes it useful for a language you are learning.&#13;&#13;
+    The server holds the answer and scores every guess, so the word is not
+    sitting in the browser waiting to be read out of devtools. Progress and
+    streaks are kept per browser in a small SQLite file. Nothing is sent
+    outside your network.
+  </Overview>
+  <Category>GameServers: Other:</Category>
+  <WebUI>http://[IP]:[PORT:8080]/</WebUI>
+  <TemplateURL>https://raw.githubusercontent.com/aleksgain/lingle/main/unraid/lingle.xml</TemplateURL>
+  <Icon>https://raw.githubusercontent.com/aleksgain/lingle/main/unraid/icon.png</Icon>
+  <ExtraParams/>
+  <PostArgs/>
+  <CPUset/>
+  <DateInstalled/>
+  <DonateText/>
+  <DonateLink/>
+  <Requires/>
+  <Config
+    Name="WebUI Port"
+    Target="8080"
+    Default="8321"
+    Mode="tcp"
+    Description="Port the game is served on. Browse to http://[TOWER-IP]:[PORT]"
+    Type="Port"
+    Display="always"
+    Required="true"
+    Mask="false">8321</Config>
+  <Config
+    Name="Data"
+    Target="/data"
+    Default="/mnt/user/appdata/lingle"
+    Mode="rw"
+    Description="Holds lingle.db - in-progress games and per-browser streaks. A few hundred KB."
+    Type="Path"
+    Display="always"
+    Required="true"
+    Mask="false">/mnt/user/appdata/lingle</Config>
+  <Config
+    Name="Default language"
+    Target="LINGLE_DEFAULT_LANG"
+    Default="ru"
+    Mode=""
+    Description="Language a first-time visitor gets: ru or en. Players can switch in the settings menu, and their choice is remembered."
+    Type="Variable"
+    Display="always"
+    Required="false"
+    Mask="false">ru</Config>
+  <Config
+    Name="Available languages"
+    Target="LINGLE_LANGUAGES"
+    Default=""
+    Mode=""
+    Description="Comma-separated allow-list of language codes, for example: ru,en - leave empty to offer every installed pack."
+    Type="Variable"
+    Display="always"
+    Required="false"
+    Mask="false"></Config>
+  <Config
+    Name="Timezone"
+    Target="TZ"
+    Default="Europe/Prague"
+    Mode=""
+    Description="Decides when the daily word rolls over. Set this to your own timezone."
+    Type="Variable"
+    Display="always"
+    Required="false"
+    Mask="false">Europe/Prague</Config>
+  <Config
+    Name="Title"
+    Target="LINGLE_TITLE"
+    Default=""
+    Mode=""
+    Description="Text shown in the page header. Leave empty to use each language's own name."
+    Type="Variable"
+    Display="advanced"
+    Required="false"
+    Mask="false"></Config>
+  <Config
+    Name="PUID"
+    Target="PUID"
+    Default="99"
+    Mode=""
+    Description="User the server runs as. 99 is unRAID's 'nobody'."
+    Type="Variable"
+    Display="advanced"
+    Required="false"
+    Mask="false">99</Config>
+  <Config
+    Name="PGID"
+    Target="PGID"
+    Default="100"
+    Mode=""
+    Description="Group the server runs as. 100 is unRAID's 'users'."
+    Type="Variable"
+    Display="advanced"
+    Required="false"
+    Mask="false">100</Config>
+</Container>

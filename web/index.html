@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#121213">
+<meta name="description" content="Self-hosted word guessing game with switchable languages">
+<title>Lingle</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app" hidden>
+  <header id="header">
+    <button class="icon-btn" id="btn-help" aria-label="Help">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 16.5a1.2 1.2 0 110-2.4 1.2 1.2 0 010 2.4zm1.8-6.1c-.7.5-.9.8-.9 1.4v.3h-1.9v-.4c0-1.2.4-1.9 1.4-2.6.8-.6 1.1-.9 1.1-1.5 0-.7-.5-1.2-1.4-1.2-.8 0-1.4.4-1.6 1.3l-1.8-.5c.3-1.6 1.6-2.6 3.4-2.6 2 0 3.4 1.1 3.4 2.8 0 1.2-.6 1.9-1.7 2.6z"/></svg>
+    </button>
+    <h1 id="title">Lingle</h1>
+    <div class="header-right">
+      <button class="icon-btn" id="btn-stats" aria-label="Statistics">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h3V10H4v10zm6.5 0h3V4h-3v16zM17 20h3v-7h-3v7z"/></svg>
+      </button>
+      <button class="icon-btn" id="btn-settings" aria-label="Settings">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.4 13a7.6 7.6 0 000-2l2-1.6-2-3.4-2.4 1a7.6 7.6 0 00-1.7-1L15 3.4h-4l-.3 2.6c-.6.2-1.2.6-1.7 1l-2.4-1-2 3.4L4.6 11a7.6 7.6 0 000 2l-2 1.6 2 3.4 2.4-1c.5.4 1.1.8 1.7 1l.3 2.6h4l.3-2.6c.6-.2 1.2-.6 1.7-1l2.4 1 2-3.4-2-1.6zM13 12a1.9 1.9 0 11-3.9 0 1.9 1.9 0 013.9 0z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <div id="board-wrap"><div id="board" role="grid" aria-label="Game board"></div></div>
+    <div id="keyboard" role="group" aria-label="Keyboard"></div>
+  </main>
+
+  <div id="toaster" role="status" aria-live="polite"></div>
+</div>
+
+<div id="loader"><div class="spinner" aria-label="Loading"></div></div>
+
+<!-- ------------------------------------------------------------------ -->
+<div class="modal" id="modal-help" hidden>
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="help-title">
+    <button class="close-btn" data-close aria-label="Close">&times;</button>
+    <h2 id="help-title"></h2>
+    <p id="help-intro"></p>
+    <p id="help-l1"></p>
+    <p id="help-l2"></p>
+    <div class="example" id="ex-correct"></div>
+    <p id="help-correct"></p>
+    <div class="example" id="ex-present"></div>
+    <p id="help-present"></p>
+    <div class="example" id="ex-absent"></div>
+    <p id="help-absent"></p>
+    <p id="help-yo" class="muted"></p>
+  </div>
+</div>
+
+<div class="modal" id="modal-stats" hidden>
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="stats-title">
+    <button class="close-btn" data-close aria-label="Close">&times;</button>
+    <h2 id="stats-title"></h2>
+    <div id="word-card" hidden>
+      <div class="word-card-word" id="wc-word"></div>
+      <div class="word-card-meta" id="wc-meta"></div>
+      <h3 id="wc-heading"></h3>
+      <div class="word-card-gloss" id="wc-gloss"></div>
+    </div>
+    <div class="stat-row" id="stat-numbers"></div>
+    <h3 id="dist-title"></h3>
+    <div id="dist"></div>
+    <div class="share-row">
+      <div class="countdown"><div class="countdown-label" id="next-label"></div><div class="countdown-time" id="next-time">--:--:--</div></div>
+      <button id="btn-share" class="primary"><span id="share-label"></span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 16a3 3 0 00-2 .8l-7-4a3 3 0 000-1.6l7-4a3 3 0 10-1-2.2c0 .3 0 .5.1.8l-7 4a3 3 0 100 4.4l7 4-.1.8A3 3 0 1018 16z"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="modal-settings" hidden>
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+    <button class="close-btn" data-close aria-label="Close">&times;</button>
+    <h2 id="settings-title"></h2>
+    <div class="setting">
+      <div><div class="setting-name" id="lbl-language"></div></div>
+      <select id="lang-select"></select>
+    </div>
+    <div class="setting">
+      <div><div class="setting-name" id="lbl-hard"></div><div class="setting-hint" id="hint-hard"></div></div>
+      <button class="switch" id="sw-hard" role="switch" aria-checked="false"><span></span></button>
+    </div>
+    <div class="setting">
+      <div><div class="setting-name" id="lbl-theme"></div></div>
+      <button class="switch" id="sw-theme" role="switch" aria-checked="true"><span></span></button>
+    </div>
+    <div class="setting">
+      <div><div class="setting-name" id="lbl-cb"></div></div>
+      <button class="switch" id="sw-cb" role="switch" aria-checked="false"><span></span></button>
+    </div>
+    <div class="version" id="version"></div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
