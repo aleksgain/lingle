@@ -97,7 +97,7 @@ wget -O /boot/config/plugins/dockerMan/templates-user/my-lingle.xml \
 ```
 
 The container runs unprivileged, drops to `PUID`/`PGID` (99/100 by default) and
-needs one path: `/data`, a few hundred KB of SQLite.
+needs one path: `/data` for a few hundred KB of SQLite.
 
 ## Configuration
 

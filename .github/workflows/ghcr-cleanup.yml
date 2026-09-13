@@ -1,0 +1,57 @@
+# Prunes accumulated GHCR images.
+#
+# ci.yml pushes each architecture by digest and then stitches them into one
+# tagged manifest list, so the per-architecture images are legitimately
+# untagged — they are referenced only by the index. A naive "delete every
+# untagged version" job would therefore destroy every multi-arch image in the
+# registry.
+#
+# dataaxiom/ghcr-cleanup-action resolves each tagged manifest list to its
+# children and excludes them before applying any delete rule, so only truly
+# orphaned versions go. `older-than` is the second safety net: it keeps
+# anything recent, so a cleanup that happens to land between a build leg's
+# push and the merge job cannot take the digests out from under it.
+#
+# Run it manually first — the dispatch input defaults to a dry run.
+name: ghcr-cleanup
+
+on:
+  schedule:
+    - cron: '30 5 * * 1' # Mondays 05:30 UTC, after deps-update has settled
+  workflow_dispatch:
+    inputs:
+      dry-run:
+        description: Report what would be deleted without deleting anything
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: ghcr-cleanup
+  cancel-in-progress: false
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      # The GHCR package name is the repo name without the owner prefix.
+      - name: Resolve package name
+        run: echo "PACKAGE=${GITHUB_REPOSITORY#*/}" >> "$GITHUB_ENV"
+
+      - name: Prune untagged and broken images
+        uses: dataaxiom/ghcr-cleanup-action@v1.2.2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          package: ${{ env.PACKAGE }}
+          # Orphans only: children of a tagged manifest list are excluded.
+          delete-untagged: true
+          # An index missing a platform, left behind when one matrix leg fails.
+          delete-partial-images: true
+          # Metadata pointing at blobs that no longer exist.
+          delete-ghost-images: true
+          older-than: 7 days
+          validate: true
+          dry-run: ${{ inputs.dry-run || false }}
