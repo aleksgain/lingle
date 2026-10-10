@@ -1,6 +1,7 @@
 package pack
 
 import (
+	"os"
 	"testing"
 	"time"
 )
@@ -135,5 +136,34 @@ func TestNormalizeFoldsLetters(t *testing.T) {
 	p := &Pack{Folds: map[string]string{"ё": "е"}}
 	if got := p.Normalize("  ЁЖИКИ "); got != "ежики" {
 		t.Fatalf("Normalize = %q, want %q", got, "ежики")
+	}
+}
+
+// Every physical key a pack maps must land on a letter the on-screen keyboard
+// offers (after folding), or the browser would silently drop the keypress.
+func TestPackCodesMapToKeyboardLetters(t *testing.T) {
+	set, err := Load(os.DirFS("../.."), "packs")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, code := range set.order {
+		p := set.byCode[code]
+		if len(p.Codes) == 0 {
+			t.Errorf("%s: no physical key codes", code)
+		}
+		letters := map[string]bool{}
+		for _, row := range p.Keyboard {
+			for _, l := range row {
+				letters[l] = true
+			}
+		}
+		for key, letter := range p.Codes {
+			if !letters[p.Normalize(letter)] {
+				t.Errorf("%s: %s maps to %q, which is not on the keyboard", code, key, letter)
+			}
+		}
+		if got := p.Meta().Codes; len(got) != len(p.Codes) {
+			t.Errorf("%s: Meta carries %d codes, want %d", code, len(got), len(p.Codes))
+		}
 	}
 }

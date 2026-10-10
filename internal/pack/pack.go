@@ -43,6 +43,7 @@ type Pack struct {
 	Epoch       string            `json:"epoch"`
 	Folds       map[string]string `json:"normalize"`
 	Keyboard    [][]string        `json:"keyboard"`
+	Codes       map[string]string `json:"codes"`
 	Strings     json.RawMessage   `json:"strings"`
 
 	Definitions map[string]Definition `json:"definitions"`
@@ -68,6 +69,7 @@ type Meta struct {
 	Tries       int               `json:"tries"`
 	Normalize   map[string]string `json:"normalize"`
 	Keyboard    [][]string        `json:"keyboard"`
+	Codes       map[string]string `json:"codes"`
 	Strings     json.RawMessage   `json:"strings"`
 }
 
@@ -75,7 +77,7 @@ func (p *Pack) Meta() Meta {
 	return Meta{
 		Code: p.Code, Name: p.Name, EnglishName: p.EnglishName, Flag: p.Flag,
 		Dir: p.Dir, Length: p.Length, Tries: p.Tries,
-		Normalize: p.Folds, Keyboard: p.Keyboard, Strings: p.Strings,
+		Normalize: p.Folds, Keyboard: p.Keyboard, Codes: p.Codes, Strings: p.Strings,
 	}
 }
 
