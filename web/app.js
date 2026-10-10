@@ -571,8 +571,13 @@ document.addEventListener('keydown', e => {
   }
   if (e.key === 'Enter') return press('enter');
   if (e.key === 'Backspace') return press('backspace');
-  const ch = fold(e.key);
-  if ([...ch].length === 1 && meta.keyboard.some(r => r.includes(ch))) press(ch);
+  // Prefer the character the OS layout produced; if it is not a letter of
+  // this language (say, Latin while playing Russian), fall back to the
+  // physical key position, so ЙЦУКЕН can be typed on an English layout.
+  const valid = c => [...c].length === 1 && meta.keyboard.some(r => r.includes(c));
+  let ch = fold(e.key);
+  if (!valid(ch) && meta.codes && meta.codes[e.code]) ch = fold(meta.codes[e.code]);
+  if (valid(ch)) press(ch);
 });
 
 document.querySelectorAll('[data-close]').forEach(btn => {

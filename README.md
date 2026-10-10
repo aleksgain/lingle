@@ -117,7 +117,10 @@ needs one path: `/data` for a few hundred KB of SQLite.
 ## Adding a language
 
 1. Add an entry to `LANGS` in `tools/make_packs.py`: the display name, the
-   on-screen keyboard rows, any letter-folding rules, and the UI strings.
+   on-screen keyboard rows, any letter-folding rules, the UI strings, and
+   `codes` — the physical key for each letter (`position_codes(rows)` covers
+   a layout that sits on the QWERTY grid), so players can type by key
+   position without switching their OS layout.
 2. Write a `tools/build_<code>.py` that produces `tools/.<code>_raw.json` with
    two keys — `guesses` (every acceptable guess) and `answers` (the puzzle
    words, best first). Both must be lists of equal-length lowercase words. Copy

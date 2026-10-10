@@ -30,6 +30,18 @@ async function dismissHelp(page) {
   }
 }
 
+// A keypress as it arrives with the OS on a US English layout: the browser
+// reports the Latin character, plus the physical key position in `code`.
+async function typeByPosition(page, keys) {
+  for (const [k, code] of keys) {
+    await page.evaluate(([k, code]) => document.dispatchEvent(
+      new KeyboardEvent('keydown', { key: k, code, bubbles: true })), [k, code]);
+    await page.waitForTimeout(15);
+  }
+}
+const firstRowText = page => page.$$eval('#board .row:first-child .tile',
+  ts => ts.map(t => t.textContent).join(''));
+
 const key = (page, k) => page.evaluate(c => document.dispatchEvent(
   new KeyboardEvent('keydown', { key: c, bubbles: true })), k);
 
@@ -93,6 +105,19 @@ async function newGame(browser, lang) {
     (await page.$$('#board .row')).length === 6 &&
     (await page.$$('#board .row:first-child .tile')).length === 5);
   check('russian keyboard rendered', (await page.$$('.key[data-key]')).length === 34);
+
+  /* ------------------- typing on an English layout ------------------ */
+  // "ghbdtn" is how "привет" comes out when you forget to switch layouts.
+  await typeByPosition(page, [['g', 'KeyG'], ['h', 'KeyH'], ['b', 'KeyB'],
+    ['d', 'KeyD'], ['t', 'KeyT']]);
+  let typed = await firstRowText(page);
+  check('english layout keys type russian letters by position', typed === 'приве', typed);
+  for (let i = 0; i < 5; i++) await key(page, 'Backspace');
+  await typeByPosition(page, [['[', 'BracketLeft'], [';', 'Semicolon'], ["'", 'Quote'],
+    [',', 'Comma'], ['`', 'Backquote']]);
+  typed = await firstRowText(page);
+  check('punctuation keys reach х ж э б and ё folds to е', typed === 'хжэбе', typed);
+  for (let i = 0; i < 5; i++) await key(page, 'Backspace');
 
   /* ---------------------------- gameplay ----------------------------- */
   await typeText(page, 'ыыыыы');
@@ -213,6 +238,12 @@ async function newGame(browser, lang) {
   check('qwerty keyboard rendered', (await page.$$('.key[data-key]')).length === 28);
   check('english game starts empty',
     await page.evaluate(() => window.__test.rows().length) === 0);
+  // And the reverse: a Russian layout still types English by position.
+  await typeByPosition(page, [['с', 'KeyC'], ['к', 'KeyR'], ['ф', 'KeyA'],
+    ['т', 'KeyN'], ['у', 'KeyE']]);
+  typed = await firstRowText(page);
+  check('russian layout keys type english letters by position', typed === 'crane', typed);
+  for (let i = 0; i < 5; i++) await key(page, 'Backspace');
   await typeText(page, 'crane');
   await key(page, 'Enter');
   await page.waitForTimeout(2400);

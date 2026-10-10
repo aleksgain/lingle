@@ -30,6 +30,27 @@ def load_blocklist(code):
     return {l.strip().lower() for l in open(path, encoding='utf-8')
             if l.strip() and not l.startswith('#')}
 
+# Physical key positions (KeyboardEvent.code) for each on-screen row, so a
+# guess can be typed by key position whatever layout the OS has active: the
+# QWERTY Q key gives й in Russian, the ЙЦУКЕН й key gives q in English.
+ROW_CODES = [
+    ['KeyQ', 'KeyW', 'KeyE', 'KeyR', 'KeyT', 'KeyY', 'KeyU', 'KeyI', 'KeyO', 'KeyP',
+     'BracketLeft', 'BracketRight'],
+    ['KeyA', 'KeyS', 'KeyD', 'KeyF', 'KeyG', 'KeyH', 'KeyJ', 'KeyK', 'KeyL',
+     'Semicolon', 'Quote'],
+    ['KeyZ', 'KeyX', 'KeyC', 'KeyV', 'KeyB', 'KeyN', 'KeyM', 'Comma', 'Period'],
+]
+
+
+def position_codes(rows):
+    """Map each physical key to the letter on that position of the layout."""
+    out = {}
+    for codes, letters in zip(ROW_CODES, rows):
+        assert len(letters) <= len(codes), letters
+        out.update(zip(codes, letters))
+    return out
+
+
 LANGS = {
     'ru': {
         'name': 'Русский',
@@ -42,6 +63,11 @@ LANGS = {
             list('фывапролджэ'),
             list('ячсмитьбю'),
         ],
+        'codes': {**position_codes([
+            list('йцукенгшщзхъ'),
+            list('фывапролджэ'),
+            list('ячсмитьбю'),
+        ]), 'Backquote': 'ё'},
         'strings': {
             'title': 'Лингл',
             'howToPlay': 'Как играть',
@@ -96,6 +122,11 @@ LANGS = {
             list('asdfghjkl'),
             list('zxcvbnm'),
         ],
+        'codes': position_codes([
+            list('qwertyuiop'),
+            list('asdfghjkl'),
+            list('zxcvbnm'),
+        ]),
         'strings': {
             'title': 'Lingle',
             'howToPlay': 'How to play',
@@ -181,6 +212,7 @@ def build(code):
         'epoch': EPOCH,
         'normalize': cfg['normalize'],
         'keyboard': cfg['keyboard'],
+        'codes': cfg['codes'],
         'strings': cfg['strings'],
         'answerCount': len(order),
         'guessCount': len(guesses),
